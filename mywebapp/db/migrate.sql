@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS items (
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity >= 0),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_items_name ON items (name);
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE items TO mywebapp;
+GRANT USAGE, SELECT ON SEQUENCE items_id_seq TO mywebapp;
