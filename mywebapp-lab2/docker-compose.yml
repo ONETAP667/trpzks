@@ -1,0 +1,51 @@
+services:
+  database:
+    image: postgres:17-alpine
+    container_name: mywebapp-database
+    environment:
+      POSTGRES_DB: mywebapp
+      POSTGRES_USER: mywebapp
+      POSTGRES_PASSWORD: mywebapp_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mywebapp_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mywebapp -d mywebapp"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mywebapp-web
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./config/config.docker.yaml:/etc/mywebapp/config.yaml:ro
+    networks:
+      - mywebapp_network
+    expose:
+      - "8080"
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: mywebapp-nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx_docker.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - mywebapp_network
+
+volumes:
+  postgres_data:
+
+networks:
+  mywebapp_network:
+    driver: bridge
