@@ -1,0 +1,6 @@
+database:
+  dbname: mywebapp
+  user: mywebapp
+  password: mywebapp_password
+  host: database
+  port: 5432
