@@ -18,8 +18,7 @@ services:
 
   web:
     build:
-      context: .
-      dockerfile: Dockerfile
+      image: ${IMAGE_NAME}:${IMAGE_TAG}
     container_name: mywebapp-web
     depends_on:
       database:
